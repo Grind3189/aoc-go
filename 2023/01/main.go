@@ -36,13 +36,13 @@ func main() {
 		}
 
 		// get first and last string of number in the array and concatinate it
-		// e.g [1,3]
-		// concat = 13
+		// e.g ["1","3"]
+		// concat = "13"
 		num1 := numStrs[0]
 		num2 := numStrs[len(numStrs)-1]
 		concat := num1 + num2
 
-		// convert the number into string
+		// convert the string to number
 		// append it to the list of numbers to add
 		num, err := strconv.Atoi(concat)
 		if err != nil {
