@@ -1,3 +1,4 @@
+// --- Day 2: Cube Conundrum ---
 package main
 
 import (
@@ -83,6 +84,66 @@ text:
 	fmt.Println("Part 1:", total)
 }
 
+// get the fewest number of cubes of each color
+// that could've been in the bag to make it valid
+func part2(file *os.File) {
+	var total int
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		text := scanner.Text()
+		r, g, b := 0, 0, 0
+		// split the input again
+		// this time we dont need the game id
+		game := strings.Split(text, ":")[1]
+		// split into set
+		set := strings.Split(game, ";")
+
+		for _, subset := range set {
+			// split the subset into each cube
+			// e.g. "3 r, 5 b" to ["3 r", "5 b"]
+			cubes := strings.Split(subset, ",")
+
+			for _, cube := range cubes {
+				cube = strings.TrimSpace(cube)
+				cubeDetails := strings.Split(cube, " ")
+				color := cubeDetails[1]
+
+				cubeNum := cubeDetails[0]
+				num, err := strconv.Atoi(cubeNum)
+				if err != nil {
+					panic("Unable to convert string to number")
+				}
+
+				// get the highest value of each cube per game
+				switch color {
+				case "red":
+					if num > r {
+						r = num
+					}
+				case "green":
+					if num > g {
+						g = num
+					}
+				case "blue":
+					if num > b {
+						b = num
+					}
+				}
+			}
+		}
+
+		// at this point
+		// r, g, b have the highest value of each cube per game
+		// meaning each can be use as a minimum value needed to make the game valid
+		// multiply each and add it to the total variable to get the answer
+		total += r * g * b
+
+	}
+
+	fmt.Println("Part 2:", total)
+}
+
 func main() {
 	file, err := os.Open("input.txt")
 	if err != nil {
@@ -91,4 +152,11 @@ func main() {
 	defer file.Close()
 
 	part1(file)
+
+	file, err = os.Open("input.txt")
+	if err != nil {
+		panic("Unable to open file")
+	}
+
+	part2(file)
 }
