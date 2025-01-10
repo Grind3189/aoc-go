@@ -193,6 +193,7 @@ func main() {
 	if err != nil {
 		panic("Unable to open file")
 	}
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	// create an array of string
 	// modify the each text, add '.' at beginning and end
