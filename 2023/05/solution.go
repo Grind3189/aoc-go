@@ -15,30 +15,63 @@ type mapType struct {
 	values [][]int
 }
 
-func part1(file *os.File) {
-	start := time.Now()
-	scanner := bufio.NewScanner(file)
-	var seeds []int
-	var maps []mapType
+func solve(seeds []int, maps []mapType) (lowestLoc int) {
+search:
+	for _, seed := range seeds {
+		target := seed
 
+		for _, mapList := range maps {
+			numArrs := mapList.values
+		numRange:
+			for _, numArr := range numArrs {
+				desNum := numArr[0]
+				srcNum := numArr[1]
+				rangeLen := numArr[2]
+				maxSrc := srcNum + (rangeLen - 1)
+				maxDes := desNum + (rangeLen - 1)
+
+				// out of range
+				if target < srcNum || target > maxSrc {
+					continue numRange
+				}
+
+				diff := maxSrc - target
+				target = maxDes - diff
+				break numRange
+			}
+		}
+
+		if lowestLoc == 0 {
+			lowestLoc = target
+			continue search
+		}
+
+		if target < lowestLoc {
+			lowestLoc = target
+		}
+
+	}
+	return lowestLoc
+}
+
+func part1(file *os.File) (seeds []int, maps []mapType) {
+	scanner := bufio.NewScanner(file)
 	var title string
+	for scanner.Scan() {
+		parts := strings.Split(scanner.Text(), ":")
+		seedsStr := strings.Split(strings.TrimSpace(parts[1]), " ")
+		for _, seed := range seedsStr {
+			num, err := strconv.Atoi(seed)
+			if err != nil {
+				panic(err)
+			}
+			seeds = append(seeds, num)
+		}
+		break
+	}
 parsing:
 	for scanner.Scan() {
 		text := scanner.Text()
-		parts := strings.Split(text, ":")
-
-		// get the seeds
-		if len(seeds) == 0 {
-			seedsStr := strings.Split(strings.TrimSpace(parts[1]), " ")
-			for _, seed := range seedsStr {
-				num, err := strconv.Atoi(seed)
-				if err != nil {
-					panic(err)
-				}
-				seeds = append(seeds, num)
-			}
-			continue parsing
-		}
 
 		// skip blanks
 		if text == "" {
@@ -59,7 +92,7 @@ parsing:
 		for _, str := range numStr {
 			num, err := strconv.Atoi(str)
 			if err != nil {
-				panic(err)
+				continue parsing
 			}
 			nums = append(nums, num)
 		}
@@ -72,45 +105,21 @@ parsing:
 		}
 	}
 
-	var location int
-search:
-	for _, seed := range seeds {
-		target := seed
+	return seeds, maps
+}
 
-		for _, mapList := range maps {
-			numArrs := mapList.values
-		numRange:
-			for _, numArr := range numArrs {
-				desNum := numArr[0]
-				srcNum := numArr[1]
-				length := numArr[2]
+func part2(seeds []int) []int {
+	var seeds2 []int
+	for i := 0; i < len(seeds); i = i + 2 {
+		seed := seeds[i]
+		rangeLen := seeds[i+1]
 
-				// search the map
-				for j := 0; j < length; j++ {
-					if target == srcNum {
-						target = desNum + j
-						break numRange
-					}
-					srcNum++
-				}
-			}
+		for j := 0; j < rangeLen; j++ {
+			seeds2 = append(seeds2, seed+j)
 		}
-
-		fmt.Println("Seed done:", seed)
-
-		if location == 0 {
-			location = target
-			continue search
-		}
-
-		if target < location {
-			location = target
-		}
-
 	}
 
-	fmt.Println("location:", location)
-	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+	return seeds2
 }
 
 func main() {
@@ -118,6 +127,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
-	part1(file)
+	// get the seeds for part 1
+	seeds, maps := part1(file)
+
+	start := time.Now()
+	part1 := solve(seeds, maps)
+	fmt.Println("Part 1:", part1)
+	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+
+	// get the seeds for part 2
+	// start = time.Now()
+	// seeds = part2(seeds)
+	// part2 := solve(seeds, maps)
+	// fmt.Println("Part 2:", part2)
+	// fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
 }
