@@ -1,0 +1,57 @@
+// --- Day 4: Ceres Search ---
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func part1(file *os.File) {
+	const WORD = "XMAS"
+	var inputs []string
+	var dummy string
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		text := scanner.Text()
+		// append place holder at the first and last of text
+		text = "." + text + "."
+
+		// append placeholder at index 0 base on length of text
+		if len(inputs) == 0 {
+			dummy = strings.Repeat(".", len(text))
+			inputs = append(inputs, dummy)
+		}
+
+		inputs = append(inputs, text)
+	}
+
+	// append placeholder at the last index
+	inputs = append(inputs, dummy)
+
+	// at this point our inputs look like this
+	// ........
+	// .XMASSD.
+	// ........
+outer:
+	for _, input := range inputs {
+		for _, rune := range input {
+			char := string(rune)
+			fmt.Printf("%c", rune)
+		}
+
+		break outer
+	}
+}
+
+func main() {
+	file, err := os.Open("input.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	part1(file)
+}

@@ -45,7 +45,7 @@ func part2(file *os.File) {
 	enable := true
 	for scanner.Scan() {
 		text := scanner.Text()
-		// find mul(nums,nums) or do() or don't()
+		// find "mul(nums,nums)" or "do()" or "don't()"
 		re := regexp.MustCompile(`mul[(]\d+,\d+[)]|don't[(][)]|do[(][)]`)
 
 		for _, match := range re.FindAllString(text, -1) {
@@ -78,9 +78,7 @@ func part2(file *os.File) {
 			}
 
 			total += num1 * num2
-
 		}
-
 	}
 
 	fmt.Println("Part 2:", total)
