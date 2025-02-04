@@ -117,12 +117,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 	part1(file)
+
 	file, err = os.Open("input.txt")
 	if err != nil {
 		panic(err)
 	}
 	part2(file)
-
-	file.Close()
 }
