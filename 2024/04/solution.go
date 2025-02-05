@@ -41,7 +41,7 @@ func parseInput(file *os.File) (inputs []string) {
 	}
 
 	// append 3 rows w/ placeholder at the last index
-	for i := 0; i < len(WORD)-1; i++ {
+	for range 3 {
 		inputs = append(inputs, strings.Repeat(".", boardLen))
 	}
 	return inputs
@@ -82,6 +82,28 @@ func part1(inputs []string) {
 	fmt.Println("Part 1:", total)
 }
 
+func part2(inputs []string) {
+	var total int
+	for i, row := range inputs {
+	search:
+		for j, runes := range row {
+			if string(runes) != "A" {
+				continue search
+			}
+
+			// search diagonally
+			d1 := string(inputs[i-1][j-1]) + string(runes) + string(inputs[i+1][j+1])
+			d2 := string(inputs[i-1][j+1]) + string(runes) + string(inputs[i+1][j-1])
+
+			if (d1 == "MAS" || d1 == "SAM") && (d2 == "MAS" || d2 == "SAM") {
+				total++
+			}
+		}
+	}
+
+	fmt.Println("Part 2:", total)
+}
+
 func main() {
 	file, err := os.Open("input.txt")
 	if err != nil {
@@ -92,4 +114,5 @@ func main() {
 	inputs := parseInput(file)
 
 	part1(inputs)
+	part2(inputs)
 }
