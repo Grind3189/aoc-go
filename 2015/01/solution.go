@@ -1,3 +1,4 @@
+// --- Day 1: Not Quite Lisp ---
 package main
 
 import (
